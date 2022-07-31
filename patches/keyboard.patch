@@ -1,0 +1,41 @@
+--- a/drivers/acpi/resource.c
++++ b/drivers/acpi/resource.c
+@@ -381,6 +381,31 @@ unsigned int acpi_dev_get_irq_type(int triggering, int polarity)
+ }
+ EXPORT_SYMBOL_GPL(acpi_dev_get_irq_type);
+ 
++static const struct dmi_system_id irq1_edge_low_shared[] = {
++	{
++		.ident = "Asus Zenbook S 13 OLED UM5302",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++			DMI_MATCH(DMI_BOARD_NAME, "UM5302TA"),
++		},
++	},
++	{
++		.ident = "Lenovo ThinkBook 14 G4+ ARA",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "21D0"),
++		},
++	},
++	{
++		.ident = "Redmi Book Pro 15 2022",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TIMI"),
++			DMI_MATCH(DMI_BOARD_NAME, "TM2113"),
++		},
++	},
++	{ }
++};
++
+ static const struct dmi_system_id medion_laptop[] = {
+ 	{
+ 		.ident = "MEDION P15651",
+@@ -408,6 +433,7 @@ struct irq_override_cmp {
+ };
+ 
+ static const struct irq_override_cmp skip_override_table[] = {
++	{ irq1_edge_low_shared, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1 },
+ 	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0 },
+ };

@@ -9,12 +9,19 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+  # Kernel fix
+  boot.kernelPackages = pkgs.linuxPackages_5_18;
+  boot.kernelPatches = [
+    {
+      name = "keyboard";
+      patch = ./patches/keyboard.patch;
+    }
+  ];
+  hardware.enableAllFirmware = true; 
 
   # Bootloader.
   boot = {
     supportedFilesystems = [ "ntfs" ];
-    kernelParams = [ "pci=nocrs" "intel_pstate=disable" ];
-    # kernelParams = [ "pci=nocrs" ];
     loader = {
       efi = {
         canTouchEfiVariables = true;
@@ -31,11 +38,11 @@
     };
   };
 
-  fileSystems."/media/alex800121/Acer" = {
-    device = "/dev/disk/by-uuid/F2D200EBD200B63F";
-    fsType = "ntfs";
-    options = [ "rw" "uid=1000" ];
-  };
+  # fileSystems."/media/alex800121/Asus" = {
+  #   device = "/dev/disk/by-uuid/F2D200EBD200B63F";
+  #   fsType = "ntfs";
+  #   options = [ "rw" "uid=1000" ];
+  # };
 
   nix = {
     package = pkgs.nixFlakes; # or versioned attributes like nixVersions.nix_2_8
@@ -56,7 +63,8 @@
       # };
       patches = old.patches ++ [
         # ./auto-cpufreq/fix-version-output.patch
-        /home/alex800121/.config/nixos/patches/detect_charging.patch
+        # /home/alex800121/.config/nixos/patches/detect_charging.patch
+        ./patches/detect_charging.patch
       ];
     } );
     # wine = super.wineWowPackages.waylandFull;
