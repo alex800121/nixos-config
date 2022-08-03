@@ -70,21 +70,9 @@
     # wine = super.wineWowPackages.waylandFull;
   } ) ];
 
-  # powerManagement = {
-  #   enable = true;
-  #   # cpuFreqGovernor = "performance";
-  #   powertop.enable = true;
-  # };
   services.power-profiles-daemon.enable = false;
   services.auto-cpufreq.enable = true;
   services.thermald.enable = true;
-  # services.tlp = {
-  #   enable = true;
-  #   settings = {
-  #     CPU_SCALING_GOVERNOR_ON_AC = "auto-cpufreq";
-  #     CPU_SCALING_GOVERNOR_ON_BAT = "auto-cpufreq";
-  #   };
-  # };
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -140,6 +128,16 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  
+  # Enable bluetooth
+  hardware.bluetooth = {
+    enable = true;
+    package = pkgs.bluez;
+    hsphfpd.enable = true;
+    powerOnBoot = true;
+  };
+  services.blueman.enable = true;
+
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -152,52 +150,52 @@
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     jack.enable = true;
-    wireplumber.enable = false;
-    media-session.enable = true;
-
-    media-session.config = {
-      alsa-monitor = {
-        properties = { };
-        rules = [
-          {
-            actions.update-props = {
-              session.suspend-timeout-seconds = 0;
-              api.alsa.ignore-dB = false;
-              api.alsa.start-delay = 1024;
-            };
-          }
-          {
-            actions = {
-              update-props = {
-                api.acp.auto-port = false;
-                api.acp.auto-profile = false;
-                api.alsa.use-acp = true;
-              };
-            };
-            matches = [
-              {
-                device.name = "~alsa_card.*";
-              }
-            ];
-          }
-          {
-            actions = {
-              update-props = {
-                node.pause-on-idle = false;
-              };
-            };
-            matches = [
-              {
-                node.name = "~alsa_input.*";
-              }
-              {
-                node.name = "~alsa_output.*";
-              }
-            ];
-          }
-        ];
-      };
-    };
+    # wireplumber.enable = false;
+    # media-session.enable = true;
+    #
+    # media-session.config = {
+    #   alsa-monitor = {
+    #     properties = { };
+    #     rules = [
+    #       {
+    #         actions.update-props = {
+    #           session.suspend-timeout-seconds = 0;
+    #           api.alsa.ignore-dB = false;
+    #           api.alsa.start-delay = 1024;
+    #         };
+    #       }
+    #       {
+    #         actions = {
+    #           update-props = {
+    #             api.acp.auto-port = false;
+    #             api.acp.auto-profile = false;
+    #             api.alsa.use-acp = true;
+    #           };
+    #         };
+    #         matches = [
+    #           {
+    #             device.name = "~alsa_card.*";
+    #           }
+    #         ];
+    #       }
+    #       {
+    #         actions = {
+    #           update-props = {
+    #             node.pause-on-idle = false;
+    #           };
+    #         };
+    #         matches = [
+    #           {
+    #             node.name = "~alsa_input.*";
+    #           }
+    #           {
+    #             node.name = "~alsa_output.*";
+    #           }
+    #         ];
+    #       }
+    #     ];
+    #   };
+    # };
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
   };
@@ -211,7 +209,7 @@
       naturalScrolling = true;
       middleEmulation = true;
       horizontalScrolling = true;
-      clickMethod = "clickfinger";
+      # clickMethod = "clickfinger";
       accelProfile = "adaptive";
       tappingDragLock = true;
       sendEventsMode = "enabled";
@@ -255,13 +253,16 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = (with pkgs; [
-    htop tmux curl unzip wget neovim alacritty
-    git vimPlugins.packer-nvim gcc
-    microsoft-edge google-chrome firefox
+    htop tmux curl unzip wget neovim alacritty ripgrep
+    git gcc gh
+    # vimPlugins.packer-nvim 
+    microsoft-edge
+    # google-chrome
     cargo rustc go
     vmware-horizon-client
     python39
     dmidecode
+    neofetch
     spotify
     libchewing
     gtk3
