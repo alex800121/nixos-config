@@ -10,7 +10,7 @@
       ./hardware-configuration.nix
     ];
   # Kernel fix
-  boot.kernelPackages = pkgs.linuxPackages_5_18;
+  boot.kernelPackages = pkgs.linuxPackages_5_19;
   boot.kernelPatches = [
     {
       name = "keyboard";
