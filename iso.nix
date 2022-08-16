@@ -9,7 +9,7 @@
 
         src = fetchurl {
           url = "https://git.kernel.org/torvalds/t/linux-6.0-rc1.tar.gz";
-          sha256 = "11rwlwv7s071ia889dk1dgrxprxiwgi7djhg47vi56dj81jgib20";
+          sha256 = "451787a0461abe26fce8af5740ac20b81610bf241ba1197be77ee9ebd3fc71ad";
         };
         kernelPatches = [];
 
