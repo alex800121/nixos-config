@@ -10,25 +10,6 @@
       ./hardware-configuration.nix
     ];
 
-  # Kernel fix
-  # boot.kernelPackages = let
-  #  linux_sgx_pkg = { fetchurl, buildLinux, ... } @ args:
-  #     buildLinux (args // rec {
-  #       version = "6.0-rc1";
-  #       modDirVersion = version;
-  #       src = fetchurl {
-  #         url = "https://git.kernel.org/torvalds/t/linux-6.0-rc1.tar.gz";
-  #         sha256 = "451787a0461abe26fce8af5740ac20b81610bf241ba1197be77ee9ebd3fc71ad";
-  #       };
-  #       kernelPatches = [];
-  #       # extraConfig = ''
-  #       #   INTEL_SGX y
-  #       # '';
-  #       extraMeta.branch = "6.0";
-  #     } // (args.argsOverride or {}));
-  #   linux_sgx = pkgs.callPackage linux_sgx_pkg{};
-  # in 
-  #   pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor linux_sgx);
   boot.kernelPackages = pkgs.linuxPackages_5_19;
   boot.kernelPatches = [
     {
@@ -74,21 +55,10 @@
   environment.variables.WEBKIT_DISABLE_COMPOSITING_MODE = "1";
   nixpkgs.overlays = [ (self: super: {
     auto-cpufreq = super.auto-cpufreq.overridePythonAttrs(old: rec{
-      # pname = "auto-cpufreq";
-      # version = "1.9.4";
-      # src = super.fetchFromGitHub {
-      #   owner = "AdnanHodzic";
-      #   repo = "auto-cpufreq";
-      #   rev = "v1.9.4";
-      #   sha256 = "sha256-JwhKBNZFIBCfF2qDIqQ6mZaHVyOARbG1Y15TLIqMVNY=";
-      # };
       patches = old.patches ++ [
-        # ./auto-cpufreq/fix-version-output.patch
-        # /home/alex800121/.config/nixos/patches/detect_charging.patch
         ./patches/detect_charging.patch
       ];
     } );
-    # wine = super.wineWowPackages.waylandFull;
   } ) ];
 
   services.power-profiles-daemon.enable = false;
@@ -112,14 +82,6 @@
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.utf8";
 
-  # i18n.inputMethod = {
-  #   enabled = "hime";
-  # };
-  # i18n.inputMethod = {
-  #   enabled = "fcitx";
-  #   fcitx.engines = with pkgs.fcitx-engines; [ chewing rime ];
-  # };
-
   i18n.inputMethod = {
     enabled = "fcitx5";
     fcitx5 = {
@@ -142,13 +104,15 @@
   services.xserver.desktopManager.gnome = {
     enable = true;
     extraGSettingsOverrides = ''
+
       [org/gnome/desktop/peripherals/touchpad]
       tap-to-click=true
       two-finger-scrolling-enabled=true
 
+      [org/gnome/shell]
+      favorite-apps=['microsoft-edge.desktop', 'Alacritty.desktop', 'org.gnome.Nautilus.desktop']
+
     '';
-      # [org/gnome/shell]
-      # favorite-apps=['microsoft-edge.desktop', 'Alacritty.desktop', 'org.gnome.Nautilus.desktop']
   };
 
   # Configure keymap in X11
@@ -270,6 +234,12 @@
     packages = with pkgs; [
     # firefox
     # thunderbird
+    # cargo rustc
+    # go
+    # vmware-horizon-client
+    # spotify
+    # libreoffice
+    # google-chrome
     ];
   };
 
@@ -281,22 +251,17 @@
   environment.systemPackages = (with pkgs; [
     htop tmux curl unzip wget neovim alacritty ripgrep
     git gcc gh
-    # vimPlugins.packer-nvim 
-    # microsoft-edge
-    # google-chrome
-    firefox
-    cargo rustc go
-    vmware-horizon-client
+    vimPlugins.packer-nvim 
+    microsoft-edge
+    # firefox
     python39
     dmidecode
     neofetch
-    spotify
     libchewing
     gtk3
     sumneko-lua-language-server
     rust-analyzer
-    libreoffice
-  # ]);
+    rnix-lsp
   ]) ++ (with pkgs.python39Packages; [
     pip
     distro psutil distutils_extra distlib  devtools click power py-dmidecode
@@ -327,7 +292,6 @@
     locate = pkgs.plocate;
     localuser = null;
   };
-  
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -341,6 +305,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "22.05"; # Did you read the comment?
+  system.stateVersion = "22.11"; # Did you read the comment?
 
 }
